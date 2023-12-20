@@ -1,5 +1,6 @@
 package com.hellomeen.boardstudy.board.entity;
 
+import com.hellomeen.boardstudy.board.dto.BoardRequestDto;
 import com.hellomeen.boardstudy.global.entity.Timestamped;
 import com.hellomeen.boardstudy.user.entity.User;
 import jakarta.persistence.*;
@@ -33,5 +34,10 @@ public class Board extends Timestamped {
         this.title = title;
         this.content = content;
         this.user = user;
+    }
+
+    public void update(BoardRequestDto boardRequestDto) {
+        this.title = boardRequestDto.getTitle();
+        this.content = boardRequestDto.getContent();
     }
 }

@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -28,5 +25,14 @@ public class BoardController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         BoardResponseDto responseDto = boardService.createBoard(requestDto, userDetails.getUser());
         return new  ApiResponseDto<>(HttpStatus.CREATED.value(), "게시글 작성 완료", responseDto);
+    }
+
+    @PutMapping("/boards/{boardId}")
+    public ApiResponseDto<BoardResponseDto> updateBoard(
+            @PathVariable Long boardId,
+            @RequestBody BoardRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        BoardResponseDto responseDto = boardService.updateBoard(boardId, requestDto, userDetails.getUser());
+        return new ApiResponseDto<>(HttpStatus.OK.value(), "게시글 수정 완료", responseDto);
     }
 }

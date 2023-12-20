@@ -8,6 +8,9 @@ import com.hellomeen.boardstudy.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.RejectedExecutionException;
 
 @Slf4j
 @Service
@@ -23,6 +26,17 @@ public class BoardService {
                 .user(user)
                 .build();
         boardRepository.save(board);
+
+        return new BoardResponseDto(board);
+    }
+
+    @Transactional
+    public BoardResponseDto updateBoard(Long boardId, BoardRequestDto boardRequestDto, User user) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new NullPointerException("게시글이 없습니다."));
+        if (!user.getId().equals(board.getUser().getId())) {
+            throw new RejectedExecutionException("게시글의 작성자만 수정할 수 있습니다.");
+        }
+        board.update(boardRequestDto);
 
         return new BoardResponseDto(board);
     }
