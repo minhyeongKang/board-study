@@ -35,4 +35,12 @@ public class BoardController {
         BoardResponseDto responseDto = boardService.updateBoard(boardId, requestDto, userDetails.getUser());
         return new ApiResponseDto<>(HttpStatus.OK.value(), "게시글 수정 완료", responseDto);
     }
+
+    @DeleteMapping("/boards/{boardId}")
+    public ApiResponseDto<BoardResponseDto> deleteBoard(
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        BoardResponseDto responseDto = boardService.deleteBoard(boardId, userDetails.getUser());
+        return new ApiResponseDto<>(HttpStatus.OK.value(), "게시글 삭제 완료", responseDto);
+    }
 }

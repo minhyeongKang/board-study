@@ -32,11 +32,23 @@ public class BoardService {
 
     @Transactional
     public BoardResponseDto updateBoard(Long boardId, BoardRequestDto boardRequestDto, User user) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new NullPointerException("게시글이 없습니다."));
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NullPointerException("게시글이 없습니다."));
         if (!user.getId().equals(board.getUser().getId())) {
             throw new RejectedExecutionException("게시글의 작성자만 수정할 수 있습니다.");
         }
         board.update(boardRequestDto);
+
+        return new BoardResponseDto(board);
+    }
+
+    public BoardResponseDto deleteBoard(Long boardId, User user) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NullPointerException("게시글이 없습니다."));
+        if (!user.getId().equals(board.getUser().getId())) {
+            throw new RejectedExecutionException("게시글의 작성자만 삭제할 수 있습니다.");
+        }
+        boardRepository.delete(board);
 
         return new BoardResponseDto(board);
     }
