@@ -1,6 +1,6 @@
 package com.hellomeen.boardstudy.board.dto;
 
-import com.hellomeen.boardstudy.comment.dto.CommentResponseDto;
+import com.hellomeen.boardstudy.comment.dto.CommentViewResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,8 +15,8 @@ public class BoardViewResponseDto {
     private String nickname;
     private String title;
     private String content;
-    //private String likes;
-    private List<CommentResponseDto> comments;
+    private Long likes;
+    private List<CommentViewResponseDto> comments;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 }

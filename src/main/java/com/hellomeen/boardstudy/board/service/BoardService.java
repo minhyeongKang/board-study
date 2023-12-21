@@ -5,7 +5,10 @@ import com.hellomeen.boardstudy.board.dto.BoardResponseDto;
 import com.hellomeen.boardstudy.board.dto.BoardViewResponseDto;
 import com.hellomeen.boardstudy.board.entity.Board;
 import com.hellomeen.boardstudy.board.repository.BoardRepository;
-import com.hellomeen.boardstudy.comment.dto.CommentResponseDto;
+import com.hellomeen.boardstudy.comment.dto.CommentViewResponseDto;
+import com.hellomeen.boardstudy.like.entity.BoardLike;
+import com.hellomeen.boardstudy.like.repository.BoardLikeRepository;
+import com.hellomeen.boardstudy.like.repository.CommentLikeRepository;
 import com.hellomeen.boardstudy.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,8 @@ import java.util.concurrent.RejectedExecutionException;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final BoardLikeRepository boardLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     public BoardResponseDto createBoard(BoardRequestDto boardRequestDto, User user) {
         Board board = Board.builder()
@@ -56,21 +61,33 @@ public class BoardService {
         return new BoardResponseDto(board);
     }
 
+    @Transactional(readOnly = true)
     public BoardViewResponseDto getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NullPointerException("게시글이 없습니다."));
-        List<CommentResponseDto> comments = board.getCommentList()
+        List<CommentViewResponseDto> comments = board.getCommentList()
                 .stream()
-                .map(CommentResponseDto::new)
+                .map(comment -> {
+                    Long commentLikes = commentLikeRepository.countByComment(comment);
+                    return new CommentViewResponseDto(comment, commentLikes);
+                })
                 .toList();
         return BoardViewResponseDto.builder()
                 .id(board.getId())
                 .nickname(board.getUser().getNickname())
                 .title(board.getTitle())
                 .content(board.getContent())
+                .likes(boardLikeRepository.countByBoard(board))
                 .comments(comments)
                 .createdAt(board.getCreatedAt())
                 .modifiedAt(board.getModifiedAt())
                 .build();
+    }
+
+    private List<Board> findByLike(final User user) {
+        return boardLikeRepository.findByUser(user)
+                .stream()
+                .map(BoardLike::getBoard)
+                .toList();
     }
 }
