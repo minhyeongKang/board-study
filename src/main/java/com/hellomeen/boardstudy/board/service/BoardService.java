@@ -56,7 +56,7 @@ public class BoardService {
         return new BoardResponseDto(board);
     }
 
-    public BoardViewResponseDto getBoards(Long boardId) {
+    public BoardViewResponseDto getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NullPointerException("게시글이 없습니다."));
         List<CommentResponseDto> comments = board.getCommentList()

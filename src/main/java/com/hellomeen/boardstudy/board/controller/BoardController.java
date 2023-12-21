@@ -46,8 +46,8 @@ public class BoardController {
     }
 
     @GetMapping("/boards/{boardId}")
-    public ApiResponseDto<BoardViewResponseDto> getBoards(@PathVariable Long boardId) {
-        BoardViewResponseDto responseDto = boardService.getBoards(boardId);
+    public ApiResponseDto<BoardViewResponseDto> getBoard(@PathVariable Long boardId) {
+        BoardViewResponseDto responseDto = boardService.getBoard(boardId);
         return new ApiResponseDto<>(HttpStatus.OK.value(), boardId + "번 글 조회 성공", responseDto);
     }
 }
