@@ -2,14 +2,17 @@ package com.hellomeen.boardstudy.board.service;
 
 import com.hellomeen.boardstudy.board.dto.BoardRequestDto;
 import com.hellomeen.boardstudy.board.dto.BoardResponseDto;
+import com.hellomeen.boardstudy.board.dto.BoardViewResponseDto;
 import com.hellomeen.boardstudy.board.entity.Board;
 import com.hellomeen.boardstudy.board.repository.BoardRepository;
+import com.hellomeen.boardstudy.comment.dto.CommentResponseDto;
 import com.hellomeen.boardstudy.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
 @Slf4j
@@ -51,5 +54,23 @@ public class BoardService {
         boardRepository.delete(board);
 
         return new BoardResponseDto(board);
+    }
+
+    public BoardViewResponseDto getBoards(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NullPointerException("게시글이 없습니다."));
+        List<CommentResponseDto> comments = board.getCommentList()
+                .stream()
+                .map(CommentResponseDto::new)
+                .toList();
+        return BoardViewResponseDto.builder()
+                .id(board.getId())
+                .nickname(board.getUser().getNickname())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .comments(comments)
+                .createdAt(board.getCreatedAt())
+                .modifiedAt(board.getModifiedAt())
+                .build();
     }
 }

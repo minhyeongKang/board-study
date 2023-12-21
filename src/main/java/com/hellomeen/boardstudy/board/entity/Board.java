@@ -1,6 +1,7 @@
 package com.hellomeen.boardstudy.board.entity;
 
 import com.hellomeen.boardstudy.board.dto.BoardRequestDto;
+import com.hellomeen.boardstudy.comment.entity.Comment;
 import com.hellomeen.boardstudy.global.entity.Timestamped;
 import com.hellomeen.boardstudy.user.entity.User;
 import jakarta.persistence.*;
@@ -8,6 +9,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,6 +31,9 @@ public class Board extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
+    List<Comment> commentList;
 
     @Builder
     public Board(String title, String content, User user) {

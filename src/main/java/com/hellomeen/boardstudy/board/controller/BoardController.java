@@ -2,6 +2,7 @@ package com.hellomeen.boardstudy.board.controller;
 
 import com.hellomeen.boardstudy.board.dto.BoardRequestDto;
 import com.hellomeen.boardstudy.board.dto.BoardResponseDto;
+import com.hellomeen.boardstudy.board.dto.BoardViewResponseDto;
 import com.hellomeen.boardstudy.board.service.BoardService;
 import com.hellomeen.boardstudy.global.dto.ApiResponseDto;
 import com.hellomeen.boardstudy.global.security.UserDetailsImpl;
@@ -42,5 +43,11 @@ public class BoardController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         BoardResponseDto responseDto = boardService.deleteBoard(boardId, userDetails.getUser());
         return new ApiResponseDto<>(HttpStatus.OK.value(), "게시글 삭제 완료", responseDto);
+    }
+
+    @GetMapping("/boards/{boardId}")
+    public ApiResponseDto<BoardViewResponseDto> getBoards(@PathVariable Long boardId) {
+        BoardViewResponseDto responseDto = boardService.getBoards(boardId);
+        return new ApiResponseDto<>(HttpStatus.OK.value(), boardId + "번 글 조회 성공", responseDto);
     }
 }

@@ -1,5 +1,6 @@
 package com.hellomeen.boardstudy.user.entity;
 
+import com.hellomeen.boardstudy.board.entity.Board;
 import com.hellomeen.boardstudy.global.entity.Timestamped;
 import com.hellomeen.boardstudy.global.entity.UserRoleEnum;
 import com.hellomeen.boardstudy.global.jwt.JwtEntity;
@@ -8,6 +9,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,6 +44,9 @@ public class User extends Timestamped {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
     JwtEntity jwtEntity;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    List<Board> boardList;
 
     @Builder
     public User(String username, String nickname, String email, String password, String intro, UserRoleEnum role) {
