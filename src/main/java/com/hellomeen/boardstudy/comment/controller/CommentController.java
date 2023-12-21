@@ -27,4 +27,14 @@ public class CommentController {
         CommentResponseDto responseDto = commentService.createComment(boardId, requestDto, userDetails.getUser());
         return new ApiResponseDto<>(HttpStatus.CREATED.value(), boardId + "번 글 댓글 생성 완료", responseDto);
     }
+
+    @PutMapping("/comments/{commentId}")
+    public ApiResponseDto<CommentResponseDto> updateComment(
+            @PathVariable Long commentId,
+            @RequestBody CommentRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, userDetails.getUser());
+        return new ApiResponseDto<>(HttpStatus.OK.value(), commentId + "번 댓글 수정 완료", responseDto);
+
+    }
 }

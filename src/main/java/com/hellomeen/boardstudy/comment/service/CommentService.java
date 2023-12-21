@@ -10,6 +10,9 @@ import com.hellomeen.boardstudy.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.RejectedExecutionException;
 
 @Slf4j
 @Service
@@ -28,6 +31,18 @@ public class CommentService {
                 .board(board)
                 .build();
         commentRepository.save(comment);
+
+        return new CommentResponseDto(comment);
+    }
+
+    @Transactional
+    public CommentResponseDto updateComment(Long commentId, CommentRequestDto commentRequestDto, User user) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NullPointerException("해당 댓글이 없습니다."));
+        if (!user.getId().equals(comment.getUser().getId())) {
+            throw new RejectedExecutionException("댓글의 작성자만 수정할 수 있습니다.");
+        }
+        comment.update(commentRequestDto);
 
         return new CommentResponseDto(comment);
     }

@@ -1,6 +1,7 @@
 package com.hellomeen.boardstudy.comment.entity;
 
 import com.hellomeen.boardstudy.board.entity.Board;
+import com.hellomeen.boardstudy.comment.dto.CommentRequestDto;
 import com.hellomeen.boardstudy.global.entity.Timestamped;
 import com.hellomeen.boardstudy.user.entity.User;
 import jakarta.persistence.*;
@@ -34,5 +35,9 @@ public class Comment extends Timestamped {
         this.comment = comment;
         this.user = user;
         this.board = board;
+    }
+
+    public void update(CommentRequestDto commentRequestDto) {
+        this.comment = commentRequestDto.getComment();
     }
 }
