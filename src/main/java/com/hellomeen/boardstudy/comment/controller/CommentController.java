@@ -35,6 +35,13 @@ public class CommentController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, userDetails.getUser());
         return new ApiResponseDto<>(HttpStatus.OK.value(), commentId + "번 댓글 수정 완료", responseDto);
+    }
 
+    @DeleteMapping("/comments/{commentId}")
+    public ApiResponseDto<CommentResponseDto> deleteComment(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CommentResponseDto responseDto = commentService.deleteComment(commentId, userDetails.getUser());
+        return new ApiResponseDto<>(HttpStatus.OK.value(), commentId + "번 댓글 삭제 완료", responseDto);
     }
 }

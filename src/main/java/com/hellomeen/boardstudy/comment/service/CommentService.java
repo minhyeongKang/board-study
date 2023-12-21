@@ -46,4 +46,15 @@ public class CommentService {
 
         return new CommentResponseDto(comment);
     }
+
+    public CommentResponseDto deleteComment(Long commentId, User user) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NullPointerException("해당 댓글이 없습니다."));
+        if (!user.getId().equals(comment.getUser().getId())) {
+            throw new RejectedExecutionException("게시글의 작성자만 삭제할 수 있습니다.");
+        }
+        commentRepository.delete(comment);
+
+        return new CommentResponseDto(comment);
+    }
 }
