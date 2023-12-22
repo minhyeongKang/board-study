@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -49,5 +51,13 @@ public class BoardController {
     public ApiResponseDto<BoardViewResponseDto> getBoard(@PathVariable Long boardId) {
         BoardViewResponseDto responseDto = boardService.getBoard(boardId);
         return new ApiResponseDto<>(HttpStatus.OK.value(), boardId + "번 글 조회 성공", responseDto);
+    }
+
+    @GetMapping("/boards")
+    public ApiResponseDto<List<BoardViewResponseDto>> getBoards(
+            @RequestParam(name = "type", required = true, defaultValue = "all") String type,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<BoardViewResponseDto> responseDto = boardService.getBoards(type, userDetails.getUser());
+        return new ApiResponseDto<>(HttpStatus.OK.value(), "전체 게시글 조회 성공", responseDto);
     }
 }

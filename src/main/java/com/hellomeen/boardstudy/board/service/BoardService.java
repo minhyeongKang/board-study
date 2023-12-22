@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -82,6 +83,39 @@ public class BoardService {
                 .createdAt(board.getCreatedAt())
                 .modifiedAt(board.getModifiedAt())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardViewResponseDto> getBoards(String type, User user) {
+        List<Board> boardList;
+
+        if (type.equals("all")) {
+            boardList = boardRepository.findAll();
+        } else if (type.equals("recent")) {
+            boardList = boardRepository.findAllByOrderByCreatedAtDesc();
+        } else if (type.equals("like")) {
+            boardList = findByLike(user);
+        } else {
+            throw new IllegalArgumentException();
+        }
+        return findAllByBoard(boardList);
+    }
+
+    private List<BoardViewResponseDto> findAllByBoard(List<Board> boards) {
+        List<BoardViewResponseDto> boardViewResponseDto = new ArrayList<>();
+        for (Board board : boards) {
+            boardViewResponseDto
+                    .add(BoardViewResponseDto.builder()
+                            .id(board.getId())
+                            .title(board.getTitle())
+                            .content(board.getContent())
+                            .nickname(board.getUser().getNickname())
+                            .likes(boardLikeRepository.countByBoard(board))
+                            .createdAt(board.getCreatedAt())
+                            .build());
+
+        }
+        return boardViewResponseDto;
     }
 
     private List<Board> findByLike(final User user) {
