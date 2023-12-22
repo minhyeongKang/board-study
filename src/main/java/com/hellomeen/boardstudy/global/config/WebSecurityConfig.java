@@ -4,12 +4,14 @@ import com.hellomeen.boardstudy.global.jwt.JwtUtil;
 import com.hellomeen.boardstudy.global.jwt.TokenRepository;
 import com.hellomeen.boardstudy.global.security.JwtAuthenticationFilter;
 import com.hellomeen.boardstudy.global.security.JwtAuthorizationFilter;
+import com.hellomeen.boardstudy.global.security.JwtLogoutHandler;
 import com.hellomeen.boardstudy.global.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,12 +24,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig extends SecurityConfigurerAdapter {
 
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration configuration;
+
+    @Bean
+    public JwtLogoutHandler jwtLogoutHandler() {
+        return new JwtLogoutHandler(tokenRepository, jwtUtil);
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -76,5 +83,4 @@ public class WebSecurityConfig {
 
         return httpSecurity.build();
     }
-
 }

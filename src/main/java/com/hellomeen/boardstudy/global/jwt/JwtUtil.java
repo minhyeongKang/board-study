@@ -60,6 +60,28 @@ public class JwtUtil {
                         .compact();
     }
 
+    public void deleteAccessToken(String token) {
+        // 실제로 토큰을 삭제하는 것이 아니라, 만료 시간을 현재 시간으로 설정하여 토큰을 무효화
+        try {
+            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            Date expiration = new Date();  // 현재 시간으로 설정하여 토큰을 즉시 만료
+            claims.setExpiration(expiration);
+        } catch (Exception e) {
+            log.error("토큰 삭제 중 오류가 발생했습니다. 토큰: {}", token, e);
+        }
+    }
+
+    public void deleteRefreshToken(String token) {
+        // 실제로 토큰을 삭제하는 것이 아니라, 만료 시간을 현재 시간으로 설정하여 토큰을 무효화
+        try {
+            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            Date expiration = new Date();  // 현재 시간으로 설정하여 토큰을 즉시 만료
+            claims.setExpiration(expiration);
+        } catch (Exception e) {
+            log.error("토큰 삭제 중 오류가 발생했습니다. 토큰: {}", token, e);
+        }
+    }
+
     public String getJwtFromHeader(HttpServletRequest request, String token) {
         String bearerToken = request.getHeader(token);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {

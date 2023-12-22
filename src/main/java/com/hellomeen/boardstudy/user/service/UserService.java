@@ -1,11 +1,15 @@
 package com.hellomeen.boardstudy.user.service;
 
 import com.hellomeen.boardstudy.global.entity.UserRoleEnum;
+import com.hellomeen.boardstudy.global.jwt.JwtEntity;
+import com.hellomeen.boardstudy.global.jwt.JwtUtil;
 import com.hellomeen.boardstudy.global.jwt.TokenRepository;
+import com.hellomeen.boardstudy.user.dto.LoginResponseDto;
 import com.hellomeen.boardstudy.user.dto.SignUpResponseDto;
 import com.hellomeen.boardstudy.user.dto.signUpRequestDto;
 import com.hellomeen.boardstudy.user.entity.User;
 import com.hellomeen.boardstudy.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenRepository tokenRepository;
+    private final JwtUtil jwtUtil;
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     public SignUpResponseDto signUp(signUpRequestDto signUpRequestDto) {
@@ -62,4 +67,21 @@ public class UserService {
                 .email(email)
                 .build();
     }
+
+    @Transactional
+    public LoginResponseDto logout(User user) {
+        JwtEntity jwt = tokenRepository.findByUserId(user.getId());
+
+        if (jwtUtil != null) {
+            String token = jwt.getToken();
+            jwtUtil.deleteAccessToken(token);
+            jwtUtil.deleteRefreshToken(token);
+            tokenRepository.delete(jwt);
+
+            return new LoginResponseDto(user);
+        } else {
+            throw new IllegalArgumentException("로그아웃에 실패했습니다.");
+        }
+    }
+
 }
